@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, type FormEvent } from 'react';
@@ -14,15 +15,13 @@ interface UserDetailsModalProps {
   voucher: Voucher | null;
   isOpen: boolean;
   onClose: () => void;
-  onPurchaseSuccess?: () => void; // Added callback for successful purchase
+  onPurchaseSuccess?: () => void;
 }
 
-// It's good practice to use environment variables for keys
 const CREATE_ORDER_URL = "http://127.0.0.1:8000/api/create-order";
 const NOTIFY_URL = "http://127.0.0.1:8000/api/midtrans-notification";
 const MIDTRANS_SERVER_KEY = process.env.NEXT_PUBLIC_MIDTRANS_SERVER_KEY || "SB-Mid-server-HaqmE_7sA1VE4pvXr7lWmunu"; 
 
-// Declare snap on window type
 declare global {
   interface Window {
     snap?: {
@@ -39,11 +38,9 @@ export function UserDetailsModal({ voucher, isOpen, onClose, onPurchaseSuccess }
   const { toast } = useToast();
 
   useEffect(() => {
-    // Check if Midtrans Snap.js is loaded
     if (window.snap) {
       setIsMidtransScriptLoaded(true);
     } else {
-      // Poll for Snap.js availability, as next/script onLoad might not be perfectly synced for immediate use
       const intervalId = setInterval(() => {
         if (window.snap) {
           setIsMidtransScriptLoaded(true);
@@ -58,7 +55,7 @@ export function UserDetailsModal({ voucher, isOpen, onClose, onPurchaseSuccess }
     if (!isOpen) {
       setName('');
       setEmail('');
-      // setIsSubmitting(false); // Keep this commented out, as Midtrans callbacks handle submission state
+      // isSubmitting is reset by Dialog's onOpenChange or Snap callbacks
     }
   }, [isOpen]);
 
@@ -92,82 +89,93 @@ export function UserDetailsModal({ voucher, isOpen, onClose, onPurchaseSuccess }
         const orderNumber = orderData.order.order_number;
         const grossAmount = Math.floor(orderData.order.total_price);
 
-        window.snap.pay(snapToken, {
-          onSuccess: async function (result: any) {
-            toast({ title: "Payment Successful!", description: "Processing your voucher..." });
-            
-            const signatureKey = CryptoJS.SHA512(orderNumber + result.status_code + grossAmount + MIDTRANS_SERVER_KEY).toString(CryptoJS.enc.Hex);
-            
-            const notificationPayload: MidtransNotificationPayload = {
-              order_id: orderNumber,
-              transaction_status: "settlement",
-              gross_amount: grossAmount,
-              status_code: result.status_code,
-              signature_key: signatureKey,
-              transaction_id: result.transaction_id,
-            };
-
-            try {
-              const notifyResponse = await fetch(NOTIFY_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(notificationPayload),
-              });
-              const notifyData = await notifyResponse.json();
-
-              if (notifyData.download_link) {
-                toast({ title: "Voucher Ready!", description: "Your voucher is being downloaded." });
-                window.location.href = notifyData.download_link;
-              } else {
-                toast({ title: "Transaction Recorded", description: notifyData.message || "PDF not found, but transaction is complete.", variant: "default" });
-              }
-              onPurchaseSuccess?.(); // Call the success callback
-            } catch (err) {
-              toast({ title: "Notification Error", description: (err as Error).message || "Failed to send notification.", variant: "destructive" });
-            }
+        // Add a small delay to allow modal UI to settle before initiating Snap payment
+        setTimeout(() => {
+          if (!window.snap) { // Re-check snap availability
+            toast({ title: "Payment Error", description: "Payment system became unavailable.", variant: "destructive" });
             setIsSubmitting(false);
-            onClose();
-          },
-          onPending: function (result: any) {
-            toast({ title: "Payment Pending", description: "Waiting for your payment.", variant: "default" });
-            setIsSubmitting(false);
-            onClose();
-          },
-          onError: function (result: any) {
-            toast({ title: "Payment Failed", description: "Please try again or contact support.", variant: "destructive" });
-            setIsSubmitting(false);
-            onClose();
-          },
-          onClose: function () {
-            // Only show "Payment Closed" if not already handled by onSuccess, onPending, or onError
-            // Check a flag or if the modal is still considered "submitting" by the parent
-            // For simplicity, we'll rely on isSubmitting state here, though a more robust solution might involve more state.
-            if (!isSubmitting) { 
-                 toast({ title: "Payment Closed", description: "You closed the payment window.", variant: "default" });
-            }
-            // Ensure isSubmitting is false if the window is closed prematurely by the user
-            // without a success/pending/error callback firing (e.g. user closes browser tab for midtrans)
-            // however, our onClose from Dialog will handle this better.
-            // setIsSubmitting(false); // This might be redundant if onClose() in Dialog always sets it.
+            onClose(); 
+            return;
           }
-        });
+
+          window.snap.pay(snapToken, {
+            onSuccess: async function (result: any) {
+              toast({ title: "Payment Successful!", description: "Processing your voucher..." });
+              
+              const signatureKey = CryptoJS.SHA512(orderNumber + result.status_code + grossAmount + MIDTRANS_SERVER_KEY).toString(CryptoJS.enc.Hex);
+              
+              const notificationPayload: MidtransNotificationPayload = {
+                order_id: orderNumber,
+                transaction_status: "settlement",
+                gross_amount: grossAmount,
+                status_code: result.status_code,
+                signature_key: signatureKey,
+                transaction_id: result.transaction_id,
+              };
+
+              try {
+                const notifyResponse = await fetch(NOTIFY_URL, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify(notificationPayload),
+                });
+                const notifyData = await notifyResponse.json();
+
+                if (notifyData.download_link) {
+                  toast({ title: "Voucher Ready!", description: "Your voucher is being downloaded." });
+                  window.location.href = notifyData.download_link;
+                } else {
+                  toast({ title: "Transaction Recorded", description: notifyData.message || "PDF not found, but transaction is complete.", variant: "default" });
+                }
+                onPurchaseSuccess?.();
+              } catch (err) {
+                toast({ title: "Notification Error", description: (err as Error).message || "Failed to send notification.", variant: "destructive" });
+              }
+              setIsSubmitting(false);
+              onClose(); // Close UserDetailsModal
+            },
+            onPending: function (result: any) {
+              toast({ title: "Payment Pending", description: "Waiting for your payment.", variant: "default" });
+              setIsSubmitting(false);
+              onClose(); // Close UserDetailsModal
+            },
+            onError: function (result: any) {
+              toast({ title: "Payment Failed", description: "Please try again or contact support.", variant: "destructive" });
+              setIsSubmitting(false);
+              onClose(); // Close UserDetailsModal
+            },
+            onClose: function () { // User closed the Snap popup manually
+              // This means payment was not completed through Snap's success/pending/error paths.
+              // Check `isSubmitting` to see if we were in an active payment flow from our app's perspective.
+              if (isSubmitting) {
+                toast({ title: "Payment Incomplete", description: "You closed the payment window before finishing.", variant: "default" });
+              }
+              // Regardless, our modal should close and state reset.
+              // `onClose()` prop will trigger Dialog's `onOpenChange(false)` which handles `setIsSubmitting(false)`.
+              onClose();
+            }
+          });
+        }, 100); // 100ms delay
+
       } else {
         toast({ title: "Order Creation Failed", description: orderData.message || "Could not create your order.", variant: "destructive" });
         setIsSubmitting(false);
+        // Let the user see the error in the modal to retry or cancel. Don't auto-close.
       }
     } catch (error) {
       toast({ title: "Error", description: (error as Error).message || "An unexpected error occurred.", variant: "destructive" });
       setIsSubmitting(false);
-    } 
-    // `finally` block removed here as `setIsSubmitting(false)` and `onClose()` are now handled within Midtrans callbacks or error catches.
+      // Let the user see the error. Don't auto-close.
+    }
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => {
-        if (!open) {
-            onClose();
-            setIsSubmitting(false); // Reset submitting state when dialog is closed externally
+    <Dialog open={isOpen} onOpenChange={(openState) => {
+        if (!openState) { // Dialog is closing
+            onClose(); // Call the original onClose prop to update parent state
+            setIsSubmitting(false); // Ensure submitting state is reset
         }
+        // No special action if dialog is opening
     }}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
