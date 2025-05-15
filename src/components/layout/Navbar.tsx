@@ -2,48 +2,24 @@
 "use client";
 
 import Link from 'next/link';
-import { useState, useEffect } from 'react';
-// import { usePathname } from 'next/navigation'; // No longer directly needed for t function
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Menu } from 'lucide-react';
-// import { getTranslator, getCurrentLocaleFromPathname } from '@/lib/i18n'; // Replaced by hook
-// import type { Locale } from '@/lib/i18n'; // No longer directly needed
-import { LanguageSwitcher } from './LanguageSwitcher';
-import { useAutoTranslation } from '@/hooks/useAutoTranslation';
 
 interface NavItem {
-  labelKey: 'nav.home' | 'nav.about' | 'nav.contact';
+  label: string;
   href: string;
 }
 
+const navItems: NavItem[] = [
+  { label: 'Home', href: '/' },
+  { label: 'About Us', href: '/about' },
+  { label: 'Contact', href: '/contact' },
+];
+
 export function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  // const pathname = usePathname(); // No longer directly needed for t function
-  // const currentLocale = getCurrentLocaleFromPathname(pathname); // Hook handles locale
-  // const t = getTranslator(currentLocale); // Replaced by hook
-
-  const navItemsConfig: NavItem[] = [
-    { labelKey: 'nav.home', href: '/' },
-    { labelKey: 'nav.about', href: '/about' },
-    { labelKey: 'nav.contact', href: '/contact' },
-  ];
-
-  // State to hold translated labels
-  const [navItems, setNavItems] = useState<{label: string, href: string}[]>([]);
-  
-  const { translatedText: homeLabel, isLoading: isLoadingHome } = useAutoTranslation('nav.home');
-  const { translatedText: aboutLabel, isLoading: isLoadingAbout } = useAutoTranslation('nav.about');
-  const { translatedText: contactLabel, isLoading: isLoadingContact } = useAutoTranslation('nav.contact');
-
-  useEffect(() => {
-    setNavItems([
-      { label: isLoadingHome ? 'Home...' : homeLabel, href: '/' },
-      { label: isLoadingAbout ? 'About...' : aboutLabel, href: '/about' },
-      { label: isLoadingContact ? 'Contact...' : contactLabel, href: '/contact' },
-    ]);
-  }, [homeLabel, aboutLabel, contactLabel, isLoadingHome, isLoadingAbout, isLoadingContact]);
-
 
   return (
     <nav className="bg-background text-foreground shadow-md sticky top-0 z-50 border-b border-border">
@@ -65,12 +41,12 @@ export function Navbar() {
                 </Link>
               </Button>
             ))}
-            <LanguageSwitcher />
+            {/* LanguageSwitcher removed */}
           </div>
 
           {/* Mobile Menu Button */}
           <div className="md:hidden flex items-center">
-            <LanguageSwitcher />
+            {/* LanguageSwitcher removed */}
             <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
               <SheetTrigger asChild>
                 <Button variant="ghost" size="icon" className="text-foreground hover:text-primary ml-2">

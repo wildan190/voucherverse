@@ -30,25 +30,16 @@ export async function generateMetadata(
   const parentOpenGraph = (await parent).openGraph || {};
   const siteName = parentOpenGraph.siteName || 'Latsubnet';
 
-  const currentCanonicalUrl = (await parent).url;
   const metadataBase = (await parent).metadataBase!;
-
-  // Base paths without locale prefix
   const basePath = `/voucher/${voucherId}`;
-  const enPath = basePath;
-  const idPath = `/id${basePath}`;
 
   return {
     title: `${voucherName} - ${siteName}`,
     description: voucherDescription,
     keywords: ['buy wifi voucher', `voucher ${voucherId}`, 'internet package details', 'latsubnet voucher', `beli voucher ${voucherId}`],
     alternates: {
-      canonical: currentCanonicalUrl?.toString(),
-      languages: {
-        'en': new URL(enPath, metadataBase).toString(),
-        'id': new URL(idPath, metadataBase).toString(),
-        'x-default': new URL(enPath, metadataBase).toString(),
-      },
+      canonical: new URL(basePath, metadataBase).toString(),
+      // languages removed
     },
   };
 }

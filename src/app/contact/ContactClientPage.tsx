@@ -3,50 +3,39 @@
 
 import Link from 'next/link';
 import { Phone, MessageSquare } from 'lucide-react';
-import { useAutoTranslation } from '@/hooks/useAutoTranslation';
+
+const pageTitle = "Contact Us";
+const intro = "Have questions, need assistance with a voucher, or just want to say hello? We're here to help! The best way to reach us is via WhatsApp for prompt support.";
+const whatsappTitle = "Chat with Us on WhatsApp";
+const whatsappPrompt = "For quick assistance, tap the button below or send a message to:";
+const whatsappButton = "Open WhatsApp Chat";
+const outro1 = "Our dedicated team is available to assist you with any inquiries regarding our WiFi vouchers, the payment process, or any other concerns you may have. We strive to provide timely and helpful responses.";
+const outro2 = "We look forward to hearing from you!";
 
 export default function ContactClientPage() {
-  const { translatedText: pageTitle, isLoading: isLoadingPageTitle } = useAutoTranslation('contact.title');
-  const { translatedText: intro, isLoading: isLoadingIntro } = useAutoTranslation('contact.intro');
-  const { translatedText: whatsappTitle, isLoading: isLoadingWhatsappTitle } = useAutoTranslation('contact.whatsapp.title');
-  const { translatedText: whatsappPrompt, isLoading: isLoadingWhatsappPrompt } = useAutoTranslation('contact.whatsapp.prompt');
-  const { translatedText: whatsappButton, isLoading: isLoadingWhatsappButton } = useAutoTranslation('contact.whatsapp.button');
-  const { translatedText: outro1, isLoading: isLoadingOutro1 } = useAutoTranslation('contact.outro1');
-  const { translatedText: outro2, isLoading: isLoadingOutro2 } = useAutoTranslation('contact.outro2');
-
   const whatsappNumber = "6281996926744"; 
   const displayWhatsappNumber = "+62 819 9692 6744"; 
   const whatsappLink = `https://wa.me/${whatsappNumber}`;
   
-  const renderText = (text: string, isLoading: boolean) => {
-    if (isLoading) return <span className="h-5 bg-muted-foreground/20 rounded w-full animate-pulse inline-block"></span>;
-    return text;
-  };
-  
-  const renderParagraph = (text: string, isLoading: boolean) => {
-    if (isLoading) return <p className="h-5 bg-muted-foreground/20 rounded w-full animate-pulse mb-2"></p>;
-    return <p>{text}</p>;
-  };
-
   return (
     <div className="container mx-auto px-4 py-12 min-h-[calc(100vh-200px)]">
       <header className="mb-10 text-center">
         <h1 className="text-4xl md:text-5xl font-bold text-primary">
-          {isLoadingPageTitle ? <span className="h-12 w-1/2 mx-auto animate-pulse bg-primary/20 rounded"></span> : pageTitle}
+          {pageTitle}
         </h1>
       </header>
       
       <div className="max-w-2xl mx-auto bg-card p-8 rounded-xl shadow-lg border border-border">
         <div className="space-y-6 text-lg text-card-foreground leading-relaxed text-center">
-          {renderParagraph(intro, isLoadingIntro)}
+          <p>{intro}</p>
           
           <div className="mt-8">
             <h2 className="text-2xl font-semibold text-primary mb-4 flex items-center justify-center">
               <MessageSquare className="mr-3 h-8 w-8" />
-              {renderText(whatsappTitle, isLoadingWhatsappTitle)}
+              {whatsappTitle}
             </h2>
             <p className="mb-3">
-              {renderText(whatsappPrompt, isLoadingWhatsappPrompt)}
+              {whatsappPrompt}
             </p>
             <p className="font-bold text-2xl text-accent mb-6 tracking-wider">
               {displayWhatsappNumber}
@@ -59,13 +48,13 @@ export default function ContactClientPage() {
               aria-label="Chat on WhatsApp"
             >
               <MessageSquare className="mr-2 h-5 w-5" />
-              {isLoadingWhatsappButton ? <span className="h-6 w-32 animate-pulse bg-accent-foreground/30 rounded"></span> : whatsappButton}
+              {whatsappButton}
             </Link>
           </div>
 
           <div className="mt-8 pt-6 border-t border-border space-y-4">
-             {renderParagraph(outro1, isLoadingOutro1)}
-             {renderParagraph(outro2, isLoadingOutro2)}
+             <p>{outro1}</p>
+             <p>{outro2}</p>
           </div>
         </div>
       </div>

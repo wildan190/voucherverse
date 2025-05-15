@@ -5,10 +5,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ShoppingCart, FileText, CreditCard, QrCode, CheckCircle2, ArrowDownCircle } from "lucide-react";
 import { Button } from "./ui/button";
 import Link from "next/link";
-// import { usePathname } from 'next/navigation'; // No longer directly needed
-// import { getTranslator, getCurrentLocaleFromPathname } from '@/lib/i18n'; // Replaced
-// import type { Locale } from '@/lib/i18n'; // No longer directly needed
-import { useAutoTranslation } from '@/hooks/useAutoTranslation';
 
 const stepIcons = [
   <ShoppingCart key="cart" className="h-8 w-8 md:h-7 md:w-7 text-primary" />,
@@ -18,90 +14,64 @@ const stepIcons = [
   <CheckCircle2 key="check" className="h-8 w-8 md:h-7 md:w-7 text-primary" />,
 ];
 
+const sectionTitle = "Simple Steps to Your Voucher";
+const sectionSubtitle = "Getting your internet voucher is quick and easy. Follow these steps to get connected in no time.";
+const buttonBrowse = "Start Browsing Vouchers";
+
+const stepsData = [
+  {
+    icon: stepIcons[0],
+    title: "1. Choose Your Voucher",
+    description: "Explore our diverse range of internet voucher packages. Click on a voucher card to view more details or hit 'Buy Now' when you've found the perfect one for your needs.",
+  },
+  {
+    icon: stepIcons[1],
+    title: "2. Provide Your Details",
+    description: "After selecting your voucher, you'll be prompted to enter your full name and email address. This information is crucial for us to deliver your voucher to you.",
+  },
+  {
+    icon: stepIcons[2],
+    title: "3. Select Your Payment Method",
+    description: "Proceed to our secure payment gateway. You can choose from various convenient payment options, including QRIS (e.g., GoPay, OVO, Dana, ShopeePay) and Virtual Account transfers from major banks.",
+  },
+  {
+    icon: stepIcons[3],
+    title: "4. Paying with QRIS (e.g., GoPay)",
+    description: "If you choose QRIS: Ensure you have a compatible app like GoPay (downloadable from the Play Store). Top up your GoPay balance if needed (GoPay supports top-ups via Visa, Mastercard, and other methods within their app). Then, simply scan the QRIS code displayed at our checkout using your GoPay app to complete the payment instantly.",
+  },
+  {
+    icon: stepIcons[4],
+    title: "5. Complete Payment & Receive Voucher",
+    description: "Follow the on-screen instructions to finalize your payment. Once confirmed, your voucher will be automatically downloaded in PDF format, ready for you to use. Enjoy your seamless internet access!",
+  },
+];
+
 export function HowToOrderSection() {
-  // const pathname = usePathname();
-  // const currentLocale = getCurrentLocaleFromPathname(pathname);
-  // const t = getTranslator(currentLocale);
-
-  const { translatedText: sectionTitle, isLoading: isLoadingSectionTitle } = useAutoTranslation('howtoorder.title');
-  const { translatedText: sectionSubtitle, isLoading: isLoadingSectionSubtitle } = useAutoTranslation('howtoorder.subtitle');
-  const { translatedText: buttonBrowse, isLoading: isLoadingButtonBrowse } = useAutoTranslation('howtoorder.button');
-
-  const stepKeys = [
-    'howtoorder.step1.title', 'howtoorder.step1.description',
-    'howtoorder.step2.title', 'howtoorder.step2.description',
-    'howtoorder.step3.title', 'howtoorder.step3.description',
-    'howtoorder.step4.title', 'howtoorder.step4.description',
-    'howtoorder.step5.title', 'howtoorder.step5.description',
-  ] as const; // Use "as const" for type safety with Messages keys
-  
-  type StepKey = typeof stepKeys[number];
-
-  const translations: Record<StepKey, { text: string; loading: boolean }> = {} as any;
-  stepKeys.forEach(key => {
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    const { translatedText, isLoading } = useAutoTranslation(key as keyof Messages);
-    translations[key as StepKey] = { text: translatedText, loading: isLoading };
-  });
-
-  const steps = [
-    {
-      icon: stepIcons[0],
-      titleKey: 'howtoorder.step1.title',
-      descriptionKey: 'howtoorder.step1.description',
-    },
-    {
-      icon: stepIcons[1],
-      titleKey: 'howtoorder.step2.title',
-      descriptionKey: 'howtoorder.step2.description',
-    },
-    {
-      icon: stepIcons[2],
-      titleKey: 'howtoorder.step3.title',
-      descriptionKey: 'howtoorder.step3.description',
-    },
-    {
-      icon: stepIcons[3],
-      titleKey: 'howtoorder.step4.title',
-      descriptionKey: 'howtoorder.step4.description',
-    },
-    {
-      icon: stepIcons[4],
-      titleKey: 'howtoorder.step5.title',
-      descriptionKey: 'howtoorder.step5.description',
-    },
-  ];
-
   return (
     <section className="py-16 bg-background" id="how-to-order">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-primary mb-3">
-                {isLoadingSectionTitle ? <span className="h-10 w-3/4 mx-auto animate-pulse bg-primary/20 rounded"></span> : sectionTitle}
+                {sectionTitle}
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                {isLoadingSectionSubtitle ? <span className="h-6 w-full mx-auto animate-pulse bg-muted-foreground/20 rounded"></span> : sectionSubtitle}
+                {sectionSubtitle}
             </p>
         </div>
         
         <div className="max-w-4xl mx-auto">
             <ul className="space-y-8">
-              {steps.map((step, index) => (
+              {stepsData.map((step, index) => (
                 <li key={index} className="flex flex-col sm:flex-row items-start bg-card p-6 rounded-xl shadow-lg border border-border hover:border-primary/30 transition-all duration-300 ease-in-out">
                   <div className="flex-shrink-0 mb-4 sm:mb-0 sm:mr-6 p-3 bg-primary/10 rounded-full">
                     {step.icon}
                   </div>
                   <div className="flex-grow">
                     <h3 className="text-xl font-semibold text-foreground mb-1">
-                      {translations[step.titleKey as StepKey].loading ? <span className="h-6 w-1/2 animate-pulse bg-foreground/20 rounded"></span> : translations[step.titleKey as StepKey].text}
+                      {step.title}
                     </h3>
                     <p className="text-muted-foreground leading-relaxed">
-                      {translations[step.descriptionKey as StepKey].loading ? 
-                        <>
-                          <span className="block h-4 w-full animate-pulse bg-muted-foreground/20 rounded mb-1"></span>
-                          <span className="block h-4 w-3/4 animate-pulse bg-muted-foreground/20 rounded"></span>
-                        </>
-                       : translations[step.descriptionKey as StepKey].text}
+                      {step.description}
                     </p>
                   </div>
                 </li>
@@ -113,7 +83,7 @@ export function HowToOrderSection() {
             <Button size="lg" asChild className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-md">
                 <Link href="#voucher-list">
                     <ArrowDownCircle className="mr-2 h-5 w-5" />
-                    {isLoadingButtonBrowse ? <span className="h-6 w-32 animate-pulse bg-primary-foreground/30 rounded"></span> : buttonBrowse}
+                    {buttonBrowse}
                 </Link>
             </Button>
         </div>
@@ -121,6 +91,3 @@ export function HowToOrderSection() {
     </section>
   );
 }
-
-// Need to import Messages type for the hook usage
-import type { Messages } from '@/lib/i18n';

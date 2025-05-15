@@ -1,38 +1,27 @@
 
 "use client";
 
-import { useAutoTranslation } from '@/hooks/useAutoTranslation';
+const pageTitle = "About Latsubnet";
+const intro1 = "Welcome to <strong>Latsubnet</strong>, your go-to destination for seamless and reliable WiFi access! We understand the importance of staying connected in today's fast-paced digital world. That's why we specialize in providing a diverse range of WiFi vouchers meticulously designed to meet your varied internet needs.";
+const intro2 = "Whether you're seeking short-term access for a quick task, a high-speed data package for streaming and gaming, or a budget-friendly option for everyday browsing, Latsubnet has you covered. Our core mission is to make internet access simple, affordable, and exceptionally convenient for everyone.";
+const intro3 = "We invite you to explore our comprehensive selection of voucher options and experience truly uninterrupted connectivity with Latsubnet. We are passionately committed to offering top-quality service and ensuring you have the best possible online experience every time you connect.";
+const outro = "Thank you for choosing Latsubnet. We look forward to keeping you connected!";
 
 export default function AboutClientPage() {
-  const { translatedText: pageTitle, isLoading: isLoadingPageTitle } = useAutoTranslation('about.title');
-  const { translatedText: intro1, isLoading: isLoadingIntro1 } = useAutoTranslation('about.intro1');
-  const { translatedText: intro2, isLoading: isLoadingIntro2 } = useAutoTranslation('about.intro2');
-  const { translatedText: intro3, isLoading: isLoadingIntro3 } = useAutoTranslation('about.intro3');
-  const { translatedText: outro, isLoading: isLoadingOutro } = useAutoTranslation('about.outro');
-  
-  const renderText = (text: string, isLoading: boolean, isHtml = false) => {
-    if (isLoading) {
-      if (isHtml) return <div className="space-y-2"><p className="h-5 bg-muted-foreground/20 rounded w-full animate-pulse"></p><p className="h-5 bg-muted-foreground/20 rounded w-3/4 animate-pulse"></p></div>;
-      return <p className="h-5 bg-muted-foreground/20 rounded w-full animate-pulse"></p>;
-    }
-    if (isHtml) return <p dangerouslySetInnerHTML={{ __html: text }} />;
-    return <p>{text}</p>;
-  };
-
   return (
     <div className="container mx-auto px-4 py-12 min-h-[calc(100vh-200px)]">
       <header className="mb-10 text-center">
         <h1 className="text-4xl md:text-5xl font-bold text-primary">
-          {isLoadingPageTitle ? <span className="h-12 w-1/2 mx-auto animate-pulse bg-primary/20 rounded"></span> : pageTitle}
+          {pageTitle}
         </h1>
       </header>
       
       <div className="max-w-3xl mx-auto bg-card p-8 rounded-xl shadow-lg border border-border">
         <div className="space-y-6 text-lg text-card-foreground leading-relaxed">
-          {renderText(intro1, isLoadingIntro1, true)}
-          {renderText(intro2, isLoadingIntro2)}
-          {renderText(intro3, isLoadingIntro3)}
-          {renderText(outro, isLoadingOutro)}
+          <p dangerouslySetInnerHTML={{ __html: intro1 }} />
+          <p>{intro2}</p>
+          <p>{intro3}</p>
+          <p>{outro}</p>
         </div>
       </div>
     </div>

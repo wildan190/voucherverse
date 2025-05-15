@@ -7,7 +7,6 @@ import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
 import { Toaster } from "@/components/ui/toaster";
 import { FloatingWhatsAppButton } from '@/components/FloatingWhatsAppButton';
-import { LocaleSetter } from '@/components/LocaleSetter';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -43,7 +42,6 @@ export const metadata: Metadata = {
       },
     ],
     locale: 'en_US',
-    alternateLocale: ['id_ID'],
     type: 'website',
   },
   twitter: {
@@ -69,7 +67,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-col min-h-screen`}>
         <Navbar />
         <main className="flex-grow">
@@ -83,7 +81,6 @@ export default function RootLayout({
           data-client-key={MIDTRANS_CLIENT_KEY}
           strategy="afterInteractive"
         />
-        <LocaleSetter />
       </body>
     </html>
   );

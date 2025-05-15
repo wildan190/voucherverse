@@ -9,11 +9,7 @@ export const metadata: Metadata = {
   description: 'Explore a wide range of WiFi vouchers at Latsubnet. Get fast and reliable internet access with our best deals and prices in Indonesia.',
   alternates: {
     canonical: '/', // Relative to metadataBase in layout.tsx
-    languages: {
-      'en': '/',
-      'id': '/id',
-      'x-default': '/', // Default language version (English)
-    },
+    // languages removed
   },
 };
 

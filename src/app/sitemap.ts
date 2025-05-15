@@ -14,39 +14,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
     // Add other static paths here if needed
   ];
 
-  const sitemapEntries: MetadataRoute.Sitemap = [];
-
-  basePaths.forEach(basePathInfo => {
-    // English version (default locale, no /en/ prefix)
-    const enUrl = `${domain}${basePathInfo.path}`;
-    const idUrl = `${domain}/id${basePathInfo.path === '/' ? '' : basePathInfo.path}`;
-
-    sitemapEntries.push({
-      url: enUrl,
+  const sitemapEntries: MetadataRoute.Sitemap = basePaths.map(basePathInfo => {
+    const url = `${domain}${basePathInfo.path}`;
+    return {
+      url: url,
       lastModified,
       changeFrequency: basePathInfo.changeFrequency,
       priority: basePathInfo.priority,
-      alternates: {
-        languages: {
-          'en': enUrl,
-          'id': idUrl,
-        },
-      },
-    });
-
-    // Indonesian version
-    sitemapEntries.push({
-      url: idUrl,
-      lastModified,
-      changeFrequency: basePathInfo.changeFrequency,
-      priority: basePathInfo.priority, // Often same priority for translations
-      alternates: {
-        languages: {
-          'en': enUrl,
-          'id': idUrl,
-        },
-      },
-    });
+    };
   });
 
   // Note: For dynamic routes like /voucher/[id], you would typically fetch all possible IDs
@@ -54,10 +29,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
   // Example for dynamic routes (if you had a way to get all voucher IDs):
   // const voucherIds = await getAllVoucherIds(); // Placeholder function
   // voucherIds.forEach(id => {
-  //   const enVoucherUrl = `${domain}/voucher/${id}`;
-  //   const idVoucherUrl = `${domain}/id/voucher/${id}`;
-  //   sitemapEntries.push({ url: enVoucherUrl, lastModified, alternates: { languages: {'en': enVoucherUrl, 'id': idVoucherUrl }} });
-  //   sitemapEntries.push({ url: idVoucherUrl, lastModified, alternates: { languages: {'en': enVoucherUrl, 'id': idVoucherUrl }} });
+  //   const voucherUrl = `${domain}/voucher/${id}`;
+  //   sitemapEntries.push({ url: voucherUrl, lastModified });
   // });
 
   return sitemapEntries;
