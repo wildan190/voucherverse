@@ -14,6 +14,7 @@ interface UserDetailsModalProps {
   voucher: Voucher | null;
   isOpen: boolean;
   onClose: () => void;
+  onPurchaseSuccess?: () => void; // Added callback for successful purchase
 }
 
 // It's good practice to use environment variables for keys
@@ -30,7 +31,7 @@ declare global {
   }
 }
 
-export function UserDetailsModal({ voucher, isOpen, onClose }: UserDetailsModalProps) {
+export function UserDetailsModal({ voucher, isOpen, onClose, onPurchaseSuccess }: UserDetailsModalProps) {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -57,7 +58,7 @@ export function UserDetailsModal({ voucher, isOpen, onClose }: UserDetailsModalP
     if (!isOpen) {
       setName('');
       setEmail('');
-      setIsSubmitting(false);
+      // setIsSubmitting(false); // Keep this commented out, as Midtrans callbacks handle submission state
     }
   }, [isOpen]);
 
@@ -120,39 +121,54 @@ export function UserDetailsModal({ voucher, isOpen, onClose }: UserDetailsModalP
               } else {
                 toast({ title: "Transaction Recorded", description: notifyData.message || "PDF not found, but transaction is complete.", variant: "default" });
               }
+              onPurchaseSuccess?.(); // Call the success callback
             } catch (err) {
               toast({ title: "Notification Error", description: (err as Error).message || "Failed to send notification.", variant: "destructive" });
             }
+            setIsSubmitting(false);
             onClose();
           },
           onPending: function (result: any) {
             toast({ title: "Payment Pending", description: "Waiting for your payment.", variant: "default" });
+            setIsSubmitting(false);
             onClose();
           },
           onError: function (result: any) {
             toast({ title: "Payment Failed", description: "Please try again or contact support.", variant: "destructive" });
+            setIsSubmitting(false);
             onClose();
           },
           onClose: function () {
-            if (!isSubmitting) { // only show if not already processing success/pending/error
+            // Only show "Payment Closed" if not already handled by onSuccess, onPending, or onError
+            // Check a flag or if the modal is still considered "submitting" by the parent
+            // For simplicity, we'll rely on isSubmitting state here, though a more robust solution might involve more state.
+            if (!isSubmitting) { 
                  toast({ title: "Payment Closed", description: "You closed the payment window.", variant: "default" });
             }
+            // Ensure isSubmitting is false if the window is closed prematurely by the user
+            // without a success/pending/error callback firing (e.g. user closes browser tab for midtrans)
+            // however, our onClose from Dialog will handle this better.
+            // setIsSubmitting(false); // This might be redundant if onClose() in Dialog always sets it.
           }
         });
       } else {
         toast({ title: "Order Creation Failed", description: orderData.message || "Could not create your order.", variant: "destructive" });
+        setIsSubmitting(false);
       }
     } catch (error) {
       toast({ title: "Error", description: (error as Error).message || "An unexpected error occurred.", variant: "destructive" });
-    } finally {
-      // Do not set isSubmitting to false here, as Midtrans callbacks will handle UI flow
-      // setIsSubmitting(false); 
-      // onClose will be called by Midtrans callbacks
-    }
+      setIsSubmitting(false);
+    } 
+    // `finally` block removed here as `setIsSubmitting(false)` and `onClose()` are now handled within Midtrans callbacks or error catches.
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+    <Dialog open={isOpen} onOpenChange={(open) => {
+        if (!open) {
+            onClose();
+            setIsSubmitting(false); // Reset submitting state when dialog is closed externally
+        }
+    }}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Enter Your Details</DialogTitle>

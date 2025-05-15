@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import type { Voucher } from '@/types';
 import { VoucherCard } from './VoucherCard';
 import { UserDetailsModal } from './UserDetailsModal';
@@ -18,36 +18,36 @@ export function VoucherList() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { toast } = useToast();
 
-  useEffect(() => {
-    const fetchVouchers = async () => {
-      setIsLoading(true);
-      setError(null);
-      try {
-        const response = await fetch(API_URL);
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const data = await response.json();
-        if (data.success && Array.isArray(data.data)) {
-          setVouchers(data.data);
-        } else {
-          throw new Error(data.message || 'Failed to load vouchers: Invalid data format');
-        }
-      } catch (err) {
-        const errorMessage = (err as Error).message || 'An unknown error occurred';
-        setError(errorMessage);
-        toast({
-          title: "Error Fetching Vouchers",
-          description: errorMessage,
-          variant: "destructive",
-        });
-      } finally {
-        setIsLoading(false);
+  const fetchVouchers = useCallback(async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const response = await fetch(API_URL);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
-    };
-
-    fetchVouchers();
+      const data = await response.json();
+      if (data.success && Array.isArray(data.data)) {
+        setVouchers(data.data);
+      } else {
+        throw new Error(data.message || 'Failed to load vouchers: Invalid data format');
+      }
+    } catch (err) {
+      const errorMessage = (err as Error).message || 'An unknown error occurred';
+      setError(errorMessage);
+      toast({
+        title: "Error Fetching Vouchers",
+        description: errorMessage,
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   }, [toast]);
+
+  useEffect(() => {
+    fetchVouchers();
+  }, [fetchVouchers]);
 
   const handleBuyNow = (voucher: Voucher) => {
     setSelectedVoucher(voucher);
@@ -57,6 +57,10 @@ export function VoucherList() {
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setSelectedVoucher(null);
+  };
+
+  const handlePurchaseSuccess = () => {
+    fetchVouchers(); // Re-fetch vouchers after successful purchase
   };
 
   if (isLoading) {
@@ -100,6 +104,7 @@ export function VoucherList() {
           voucher={selectedVoucher}
           isOpen={isModalOpen}
           onClose={handleCloseModal}
+          onPurchaseSuccess={handlePurchaseSuccess}
         />
       )}
     </div>
