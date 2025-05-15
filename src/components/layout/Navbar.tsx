@@ -3,18 +3,25 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
+import { usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Menu } from 'lucide-react';
-
-const navItems = [
-  { label: 'Home', href: '/' },
-  { label: 'About Us', href: '/about' },
-  { label: 'Contact', href: '/contact' },
-];
+import { getTranslator, getCurrentLocaleFromPathname } from '@/lib/i18n';
+import type { Locale } from '@/lib/i18n';
+import { LanguageSwitcher } from './LanguageSwitcher';
 
 export function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const pathname = usePathname();
+  const currentLocale = getCurrentLocaleFromPathname(pathname);
+  const t = getTranslator(currentLocale);
+
+  const navItems = [
+    { label: t('nav.home'), href: '/' },
+    { label: t('nav.about'), href: '/about' },
+    { label: t('nav.contact'), href: '/contact' },
+  ];
 
   return (
     <nav className="bg-background text-foreground shadow-md sticky top-0 z-50 border-b border-border">
@@ -25,7 +32,7 @@ export function Navbar() {
           </Link>
 
           {/* Desktop Menu */}
-          <div className="hidden md:flex space-x-1">
+          <div className="hidden md:flex items-center space-x-1">
             {navItems.map((item) => (
               <Button key={item.label} variant="ghost" asChild>
                 <Link
@@ -36,13 +43,15 @@ export function Navbar() {
                 </Link>
               </Button>
             ))}
+            <LanguageSwitcher />
           </div>
 
           {/* Mobile Menu Button */}
-          <div className="md:hidden">
+          <div className="md:hidden flex items-center">
+            <LanguageSwitcher />
             <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
               <SheetTrigger asChild>
-                <Button variant="ghost" size="icon" className="text-foreground hover:text-primary">
+                <Button variant="ghost" size="icon" className="text-foreground hover:text-primary ml-2">
                   <Menu className="h-6 w-6" />
                   <span className="sr-only">Open menu</span>
                 </Button>

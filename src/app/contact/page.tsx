@@ -1,38 +1,46 @@
 
-import type { Metadata } from 'next';
-import Link from 'next/link';
-import { Phone, MessageSquare } from 'lucide-react'; // Using MessageSquare for a WhatsApp-like icon
+"use client";
 
-export const metadata: Metadata = {
-  title: 'Contact Us - Latsubnet',
-  description: 'Get in touch with Latsubnet for support and inquiries via WhatsApp.',
-};
+import type { Metadata } from 'next'; // Metadata remains static for now
+import Link from 'next/link';
+import { Phone, MessageSquare } from 'lucide-react';
+import { usePathname } from 'next/navigation';
+import { getTranslator, getCurrentLocaleFromPathname } from '@/lib/i18n';
+import type { Locale } from '@/lib/i18n';
+
+// export const metadata: Metadata = { // Cannot be dynamic this way in client component
+//   title: 'Contact Us - Latsubnet',
+//   description: 'Get in touch with Latsubnet for support and inquiries via WhatsApp.',
+// };
 
 export default function ContactPage() {
-  const whatsappNumber = "6281996926744"; // Number for wa.me link (no + or special characters)
-  const displayWhatsappNumber = "+62 819 9692 6744"; // Number for display
+  const pathname = usePathname();
+  const currentLocale = getCurrentLocaleFromPathname(pathname);
+  const t = getTranslator(currentLocale);
+
+  const whatsappNumber = "6281996926744"; 
+  const displayWhatsappNumber = "+62 819 9692 6744"; 
   const whatsappLink = `https://wa.me/${whatsappNumber}`;
 
   return (
-    <div className="container mx-auto px-4 py-12 min-h-[calc(100vh-200px)]"> {/* Adjusted min-height */}
+    <div className="container mx-auto px-4 py-12 min-h-[calc(100vh-200px)]">
       <header className="mb-10 text-center">
-        <h1 className="text-4xl md:text-5xl font-bold text-primary">Contact Us</h1>
+        <h1 className="text-4xl md:text-5xl font-bold text-primary">{t('contact.title')}</h1>
       </header>
       
       <div className="max-w-2xl mx-auto bg-card p-8 rounded-xl shadow-lg border border-border">
         <div className="space-y-6 text-lg text-card-foreground leading-relaxed text-center">
           <p>
-            Have questions, need assistance with a voucher, or just want to say hello? 
-            We're here to help! The best way to reach us is via WhatsApp for prompt support.
+            {t('contact.intro')}
           </p>
           
           <div className="mt-8">
             <h2 className="text-2xl font-semibold text-primary mb-4 flex items-center justify-center">
               <MessageSquare className="mr-3 h-8 w-8" />
-              Chat with Us on WhatsApp
+              {t('contact.whatsapp.title')}
             </h2>
             <p className="mb-3">
-              For quick assistance, tap the button below or send a message to:
+              {t('contact.whatsapp.prompt')}
             </p>
             <p className="font-bold text-2xl text-accent mb-6 tracking-wider">
               {displayWhatsappNumber}
@@ -45,16 +53,15 @@ export default function ContactPage() {
               aria-label="Chat on WhatsApp"
             >
               <MessageSquare className="mr-2 h-5 w-5" />
-              Open WhatsApp Chat
+              {t('contact.whatsapp.button')}
             </Link>
           </div>
 
           <p className="mt-8 pt-6 border-t border-border">
-            Our dedicated team is available to assist you with any inquiries regarding our WiFi vouchers, 
-            the payment process, or any other concerns you may have. We strive to provide timely and helpful responses.
+            {t('contact.outro1')}
           </p>
           <p>
-            We look forward to hearing from you!
+            {t('contact.outro2')}
           </p>
         </div>
       </div>

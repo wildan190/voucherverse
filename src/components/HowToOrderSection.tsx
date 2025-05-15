@@ -1,35 +1,44 @@
 
+"use client";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ShoppingCart, FileText, CreditCard, QrCode, CheckCircle2, ArrowDownCircle } from "lucide-react";
 import { Button } from "./ui/button";
 import Link from "next/link";
+import { usePathname } from 'next/navigation';
+import { getTranslator, getCurrentLocaleFromPathname } from '@/lib/i18n';
+import type { Locale } from '@/lib/i18n';
 
 export function HowToOrderSection() {
+  const pathname = usePathname();
+  const currentLocale = getCurrentLocaleFromPathname(pathname);
+  const t = getTranslator(currentLocale);
+
   const steps = [
     {
       icon: <ShoppingCart className="h-8 w-8 md:h-7 md:w-7 text-primary" />,
-      title: "1. Choose Your Voucher",
-      description: "Explore our diverse range of internet voucher packages. Click on a voucher card to view more details or hit 'Buy Now' when you've found the perfect one for your needs.",
+      title: t('howtoorder.step1.title'),
+      description: t('howtoorder.step1.description'),
     },
     {
       icon: <FileText className="h-8 w-8 md:h-7 md:w-7 text-primary" />,
-      title: "2. Provide Your Details",
-      description: "After selecting your voucher, you'll be prompted to enter your full name and email address. This information is crucial for us to deliver your voucher to you.",
+      title: t('howtoorder.step2.title'),
+      description: t('howtoorder.step2.description'),
     },
     {
       icon: <CreditCard className="h-8 w-8 md:h-7 md:w-7 text-primary" />,
-      title: "3. Select Your Payment Method",
-      description: "Proceed to our secure payment gateway. You can choose from various convenient payment options, including QRIS (e.g., GoPay, OVO, Dana, ShopeePay) and Virtual Account transfers from major banks.",
+      title: t('howtoorder.step3.title'),
+      description: t('howtoorder.step3.description'),
     },
     {
       icon: <QrCode className="h-8 w-8 md:h-7 md:w-7 text-primary" />,
-      title: "4. Paying with QRIS (e.g., GoPay)",
-      description: "If you choose QRIS: Ensure you have a compatible app like GoPay (downloadable from the Play Store). Top up your GoPay balance if needed (GoPay supports top-ups via Visa, Mastercard, and other methods within their app). Then, simply scan the QRIS code displayed at our checkout using your GoPay app to complete the payment instantly.",
+      title: t('howtoorder.step4.title'),
+      description: t('howtoorder.step4.description'),
     },
     {
       icon: <CheckCircle2 className="h-8 w-8 md:h-7 md:w-7 text-primary" />,
-      title: "5. Complete Payment & Receive Voucher",
-      description: "Follow the on-screen instructions to finalize your payment. Once confirmed, your voucher will be automatically downloaded in PDF format, ready for you to use. Enjoy your seamless internet access!",
+      title: t('howtoorder.step5.title'),
+      description: t('howtoorder.step5.description'),
     },
   ];
 
@@ -38,10 +47,10 @@ export function HowToOrderSection() {
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-primary mb-3">
-                Simple Steps to Your Voucher
+                {t('howtoorder.title')}
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                Getting your internet voucher is quick and easy. Follow these steps to get connected in no time.
+                {t('howtoorder.subtitle')}
             </p>
         </div>
         
@@ -65,7 +74,7 @@ export function HowToOrderSection() {
             <Button size="lg" asChild className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-md">
                 <Link href="#voucher-list">
                     <ArrowDownCircle className="mr-2 h-5 w-5" />
-                    Start Browsing Vouchers
+                    {t('howtoorder.button')}
                 </Link>
             </Button>
         </div>

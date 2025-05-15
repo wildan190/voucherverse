@@ -6,7 +6,8 @@ import './globals.css';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
 import { Toaster } from "@/components/ui/toaster";
-import { FloatingWhatsAppButton } from '@/components/FloatingWhatsAppButton'; // Added import
+import { FloatingWhatsAppButton } from '@/components/FloatingWhatsAppButton';
+import { LocaleSetter } from '@/components/LocaleSetter'; // Added import
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -18,12 +19,15 @@ const geistMono = Geist_Mono({
   subsets: ['latin'],
 });
 
+// Note: Making metadata dynamic based on locale requires more advanced setup,
+// typically involving generating metadata in page.tsx or layout.tsx using params.locale
+// if using [locale] segments, or fetching translations.
+// For now, it remains static.
 export const metadata: Metadata = {
   title: 'LATSUBNET - Find Your Perfect Voucher',
   description: 'Best Deals, Best Prices, Just for You!',
 };
 
-// It's good practice to use environment variables for keys
 const MIDTRANS_CLIENT_KEY = process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY || "SB-Mid-client-OVHobrlLdKtUpsyk";
 
 export default function RootLayout({
@@ -32,15 +36,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en"> {/* Default lang, LocaleSetter will update it client-side */}
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-col min-h-screen`}>
+        <LocaleSetter /> {/* Add LocaleSetter here */}
         <Navbar />
         <main className="flex-grow">
           {children}
         </main>
         <Footer />
         <Toaster />
-        <FloatingWhatsAppButton /> {/* Added component here */}
+        <FloatingWhatsAppButton />
         <Script
           src="https://app.sandbox.midtrans.com/snap/snap.js"
           data-client-key={MIDTRANS_CLIENT_KEY}
