@@ -36,7 +36,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en"> {/* Default lang, LocaleSetter will update it client-side */}
+    <html lang="en" suppressHydrationWarning> {/* Default lang, LocaleSetter will update it client-side. Added suppressHydrationWarning */}
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-col min-h-screen`}>
         <LocaleSetter /> {/* Add LocaleSetter here */}
         <Navbar />
