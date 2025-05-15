@@ -4,7 +4,10 @@ export interface Voucher {
   description: string;
   size: string; // e.g., "10 GB"
   duration: number; // e.g., 30 (days)
-  price: number;
+  price: number; // Ensure this is consistently a number
+  isSold?: boolean;
+  created_at?: string;
+  updated_at?: string;
 }
 
 export interface OrderData {
