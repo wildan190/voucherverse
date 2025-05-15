@@ -55,7 +55,7 @@ export function UserDetailsModal({ voucher, isOpen, onClose, onPurchaseSuccess }
     if (!isOpen) {
       setName('');
       setEmail('');
-      // isSubmitting is reset by Dialog's onOpenChange or Snap callbacks
+      // isSubmitting is reset by Dialog's onOpenChange or when it's closed before Snap.
     }
   }, [isOpen]);
 
@@ -89,12 +89,15 @@ export function UserDetailsModal({ voucher, isOpen, onClose, onPurchaseSuccess }
         const orderNumber = orderData.order.order_number;
         const grossAmount = Math.floor(orderData.order.total_price);
 
-        // Add a small delay to allow modal UI to settle before initiating Snap payment
+        // Close this modal *before* initiating Snap payment.
+        // This will trigger onOpenChange in Dialog, which also resets isSubmitting for this instance.
+        onClose(); 
+
+        // Add a delay to allow modal UI to animate out before initiating Snap payment
         setTimeout(() => {
           if (!window.snap) { // Re-check snap availability
             toast({ title: "Payment Error", description: "Payment system became unavailable.", variant: "destructive" });
-            setIsSubmitting(false);
-            onClose(); 
+            // setIsSubmitting(false) was handled by onOpenChange when modal closed.
             return;
           }
 
@@ -131,41 +134,26 @@ export function UserDetailsModal({ voucher, isOpen, onClose, onPurchaseSuccess }
               } catch (err) {
                 toast({ title: "Notification Error", description: (err as Error).message || "Failed to send notification.", variant: "destructive" });
               }
-              setIsSubmitting(false);
-              onClose(); // Close UserDetailsModal
             },
             onPending: function (result: any) {
               toast({ title: "Payment Pending", description: "Waiting for your payment.", variant: "default" });
-              setIsSubmitting(false);
-              onClose(); // Close UserDetailsModal
             },
             onError: function (result: any) {
               toast({ title: "Payment Failed", description: "Please try again or contact support.", variant: "destructive" });
-              setIsSubmitting(false);
-              onClose(); // Close UserDetailsModal
             },
             onClose: function () { // User closed the Snap popup manually
-              // This means payment was not completed through Snap's success/pending/error paths.
-              // Check `isSubmitting` to see if we were in an active payment flow from our app's perspective.
-              if (isSubmitting) {
-                toast({ title: "Payment Incomplete", description: "You closed the payment window before finishing.", variant: "default" });
-              }
-              // Regardless, our modal should close and state reset.
-              // `onClose()` prop will trigger Dialog's `onOpenChange(false)` which handles `setIsSubmitting(false)`.
-              onClose();
+              toast({ title: "Payment Incomplete", description: "You closed the payment window before finishing.", variant: "default" });
             }
           });
-        }, 100); // 100ms delay
+        }, 300); // 300ms delay to match typical modal animation duration
 
       } else {
         toast({ title: "Order Creation Failed", description: orderData.message || "Could not create your order.", variant: "destructive" });
-        setIsSubmitting(false);
-        // Let the user see the error in the modal to retry or cancel. Don't auto-close.
+        setIsSubmitting(false); // Allow retry if order creation failed, modal stays open.
       }
     } catch (error) {
       toast({ title: "Error", description: (error as Error).message || "An unexpected error occurred.", variant: "destructive" });
-      setIsSubmitting(false);
-      // Let the user see the error. Don't auto-close.
+      setIsSubmitting(false); // Allow retry if an unexpected error occurred, modal stays open.
     }
   };
 
@@ -173,9 +161,8 @@ export function UserDetailsModal({ voucher, isOpen, onClose, onPurchaseSuccess }
     <Dialog open={isOpen} onOpenChange={(openState) => {
         if (!openState) { // Dialog is closing
             onClose(); // Call the original onClose prop to update parent state
-            setIsSubmitting(false); // Ensure submitting state is reset
+            setIsSubmitting(false); // Ensure submitting state is reset for this modal instance
         }
-        // No special action if dialog is opening
     }}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
@@ -230,3 +217,4 @@ export function UserDetailsModal({ voucher, isOpen, onClose, onPurchaseSuccess }
     </Dialog>
   );
 }
+
