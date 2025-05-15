@@ -1,3 +1,4 @@
+
 import type { Metadata } from 'next';
 import Script from 'next/script';
 import { Geist, Geist_Mono } from 'next/font/google';
@@ -5,6 +6,7 @@ import './globals.css';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
 import { Toaster } from "@/components/ui/toaster";
+import { FloatingWhatsAppButton } from '@/components/FloatingWhatsAppButton'; // Added import
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -38,6 +40,7 @@ export default function RootLayout({
         </main>
         <Footer />
         <Toaster />
+        <FloatingWhatsAppButton /> {/* Added component here */}
         <Script
           src="https://app.sandbox.midtrans.com/snap/snap.js"
           data-client-key={MIDTRANS_CLIENT_KEY}

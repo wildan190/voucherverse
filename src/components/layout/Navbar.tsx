@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from 'next/link';
@@ -8,8 +9,8 @@ import { Menu } from 'lucide-react';
 
 const navItems = [
   { label: 'Home', href: '/' },
-  { label: 'About Us', href: '#' },
-  { label: 'Contact', href: '#' },
+  { label: 'About Us', href: '/about' },
+  { label: 'Contact', href: '/contact' },
 ];
 
 export function Navbar() {
