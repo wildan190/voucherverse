@@ -1,4 +1,6 @@
+
 import { HeroSection } from '@/components/HeroSection';
+import { HowToOrderSection } from '@/components/HowToOrderSection';
 import { VoucherList } from '@/components/vouchers/VoucherList';
 
 export default function HomePage() {
@@ -6,6 +8,7 @@ export default function HomePage() {
     <>
       <HeroSection />
       <VoucherList />
+      <HowToOrderSection />
     </>
   );
 }
