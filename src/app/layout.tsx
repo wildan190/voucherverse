@@ -7,7 +7,7 @@ import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
 import { Toaster } from "@/components/ui/toaster";
 import { FloatingWhatsAppButton } from '@/components/FloatingWhatsAppButton';
-import { LocaleSetter } from '@/components/LocaleSetter'; // Added import
+import { LocaleSetter } from '@/components/LocaleSetter';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -19,10 +19,6 @@ const geistMono = Geist_Mono({
   subsets: ['latin'],
 });
 
-// Note: Making metadata dynamic based on locale requires more advanced setup,
-// typically involving generating metadata in page.tsx or layout.tsx using params.locale
-// if using [locale] segments, or fetching translations.
-// For now, it remains static.
 export const metadata: Metadata = {
   title: 'LATSUBNET - Find Your Perfect Voucher',
   description: 'Best Deals, Best Prices, Just for You!',
@@ -38,7 +34,6 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning> {/* Default lang, LocaleSetter will update it client-side. Added suppressHydrationWarning */}
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-col min-h-screen`}>
-        <LocaleSetter /> {/* Add LocaleSetter here */}
         <Navbar />
         <main className="flex-grow">
           {children}
@@ -51,6 +46,7 @@ export default function RootLayout({
           data-client-key={MIDTRANS_CLIENT_KEY}
           strategy="afterInteractive"
         />
+        <LocaleSetter /> {/* Moved LocaleSetter to the end of body */}
       </body>
     </html>
   );
