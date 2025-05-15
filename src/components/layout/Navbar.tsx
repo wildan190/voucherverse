@@ -2,26 +2,48 @@
 "use client";
 
 import Link from 'next/link';
-import { useState } from 'react';
-import { usePathname } from 'next/navigation';
+import { useState, useEffect } from 'react';
+// import { usePathname } from 'next/navigation'; // No longer directly needed for t function
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Menu } from 'lucide-react';
-import { getTranslator, getCurrentLocaleFromPathname } from '@/lib/i18n';
-import type { Locale } from '@/lib/i18n';
+// import { getTranslator, getCurrentLocaleFromPathname } from '@/lib/i18n'; // Replaced by hook
+// import type { Locale } from '@/lib/i18n'; // No longer directly needed
 import { LanguageSwitcher } from './LanguageSwitcher';
+import { useAutoTranslation } from '@/hooks/useAutoTranslation';
+
+interface NavItem {
+  labelKey: 'nav.home' | 'nav.about' | 'nav.contact';
+  href: string;
+}
 
 export function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const pathname = usePathname();
-  const currentLocale = getCurrentLocaleFromPathname(pathname);
-  const t = getTranslator(currentLocale);
+  // const pathname = usePathname(); // No longer directly needed for t function
+  // const currentLocale = getCurrentLocaleFromPathname(pathname); // Hook handles locale
+  // const t = getTranslator(currentLocale); // Replaced by hook
 
-  const navItems = [
-    { label: t('nav.home'), href: '/' },
-    { label: t('nav.about'), href: '/about' },
-    { label: t('nav.contact'), href: '/contact' },
+  const navItemsConfig: NavItem[] = [
+    { labelKey: 'nav.home', href: '/' },
+    { labelKey: 'nav.about', href: '/about' },
+    { labelKey: 'nav.contact', href: '/contact' },
   ];
+
+  // State to hold translated labels
+  const [navItems, setNavItems] = useState<{label: string, href: string}[]>([]);
+  
+  const { translatedText: homeLabel, isLoading: isLoadingHome } = useAutoTranslation('nav.home');
+  const { translatedText: aboutLabel, isLoading: isLoadingAbout } = useAutoTranslation('nav.about');
+  const { translatedText: contactLabel, isLoading: isLoadingContact } = useAutoTranslation('nav.contact');
+
+  useEffect(() => {
+    setNavItems([
+      { label: isLoadingHome ? 'Home...' : homeLabel, href: '/' },
+      { label: isLoadingAbout ? 'About...' : aboutLabel, href: '/about' },
+      { label: isLoadingContact ? 'Contact...' : contactLabel, href: '/contact' },
+    ]);
+  }, [homeLabel, aboutLabel, contactLabel, isLoadingHome, isLoadingAbout, isLoadingContact]);
+
 
   return (
     <nav className="bg-background text-foreground shadow-md sticky top-0 z-50 border-b border-border">
@@ -34,7 +56,7 @@ export function Navbar() {
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center space-x-1">
             {navItems.map((item) => (
-              <Button key={item.label} variant="ghost" asChild>
+              <Button key={item.href} variant="ghost" asChild>
                 <Link
                   href={item.href}
                   className="px-3 py-2 text-sm font-medium text-foreground hover:text-primary hover:bg-primary/10 transition-colors"
@@ -59,7 +81,7 @@ export function Navbar() {
               <SheetContent side="right" className="w-[250px] bg-background text-foreground p-4">
                 <div className="flex flex-col space-y-4 mt-6">
                   {navItems.map((item) => (
-                     <Button key={item.label} variant="ghost" asChild className="justify-start">
+                     <Button key={item.href} variant="ghost" asChild className="justify-start">
                         <Link
                           href={item.href}
                           className="block px-3 py-2 text-base font-medium text-foreground hover:text-primary hover:bg-primary/10 transition-colors"
