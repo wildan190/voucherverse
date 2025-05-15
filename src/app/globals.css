@@ -4,8 +4,8 @@
 
 @layer base {
   :root {
-    --background: 0 0% 95%; /* #f2f2f2 light gray (secondary color from request) */
-    --foreground: 240 10% 3.9%; /* default dark text */
+    --background: 0 0% 98%; /* Updated: Lighter background */
+    --foreground: 240 10% 15%; /* Updated: Slightly softer black */
 
     --card: 0 0% 100%; /* white */
     --card-foreground: 240 10% 3.9%;
@@ -14,16 +14,16 @@
     --popover-foreground: 240 10% 3.9%;
 
     --primary: 207 70% 53%; /* #3498db vibrant blue (primary color from request) */
-    --primary-foreground: 210 40% 98%; /* white/light text on primary */
+    --primary-foreground: 0 0% 100%; /* Updated: Pure white for better contrast on primary */
 
-    --secondary: 0 0% 90%; /* A slightly darker gray for secondary elements */
-    --secondary-foreground: 240 10% 3.9%;
+    --secondary: 0 0% 92%; /* Updated: Slightly darker secondary for better definition */
+    --secondary-foreground: 240 8% 10%;
 
-    --muted: 0 0% 85%; /* Muted gray */
-    --muted-foreground: 240 5% 45.1%;
+    --muted: 0 0% 90%; /* Updated: Muted gray */
+    --muted-foreground: 240 5% 40%; /* Updated: Softer muted foreground */
 
     --accent: 145 63% 49%; /* #2ecc71 emerald green (accent color from request) */
-    --accent-foreground: 0 0% 98%; /* white/light text on accent */
+    --accent-foreground: 0 0% 100%; /* Updated: Pure white for better contrast on accent */
 
     --destructive: 0 84.2% 60.2%; /* #ff4c60 was used for some primary buttons in HTML, now destructive */
     --destructive-foreground: 0 0% 98%;
@@ -57,13 +57,13 @@
     --popover: 240 10% 3.9%;
     --popover-foreground: 0 0% 98%;
     --primary: 207 70% 53%;
-    --primary-foreground: 210 40% 98%;
+    --primary-foreground: 0 0% 100%;
     --secondary: 240 3.7% 15.9%;
     --secondary-foreground: 0 0% 98%;
     --muted: 240 3.7% 15.9%;
     --muted-foreground: 0 0% 63.9%;
     --accent: 145 63% 49%;
-    --accent-foreground: 0 0% 98%;
+    --accent-foreground: 0 0% 100%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
     --border: 240 3.7% 15.9%;
