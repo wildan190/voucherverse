@@ -29,7 +29,7 @@ export function HowToOrderSection() {
     {
       icon: <CheckCircle2 className="h-8 w-8 md:h-7 md:w-7 text-primary" />,
       title: "5. Complete Payment & Receive Voucher",
-      description: "Follow the on-screen instructions to finalize your payment. Once confirmed, your voucher details will be provided (e.g., via a download link or displayed directly), ready for you to use. Enjoy your seamless internet access!",
+      description: "Follow the on-screen instructions to finalize your payment. Once confirmed, your voucher will be automatically downloaded in PDF format, ready for you to use. Enjoy your seamless internet access!",
     },
   ];
 
