@@ -19,9 +19,46 @@ const geistMono = Geist_Mono({
   subsets: ['latin'],
 });
 
+const siteDomain = 'https://latsubnet.com';
+
 export const metadata: Metadata = {
-  title: 'LATSUBNET - Find Your Perfect Voucher',
-  description: 'Best Deals, Best Prices, Just for You!',
+  metadataBase: new URL(siteDomain),
+  title: {
+    default: 'LATSUBNET - Find Your Perfect WiFi Voucher',
+    template: '%s | Latsubnet',
+  },
+  description: 'Best Deals, Best Prices, Just for You! Latsubnet offers a variety of WiFi vouchers for seamless internet access in Indonesia.',
+  keywords: ['WiFi voucher', 'internet voucher', 'Latsubnet', 'beli voucher WiFi', 'paket internet', 'hotspot voucher', 'Indonesia internet', 'voucher WiFi murah', 'akses internet cepat'],
+  openGraph: {
+    title: 'LATSUBNET - WiFi Vouchers',
+    description: 'Find the best WiFi voucher deals with Latsubnet. Fast, reliable, and affordable internet access.',
+    url: siteDomain,
+    siteName: 'Latsubnet',
+    images: [
+      {
+        url: `${siteDomain}/og-image.png`, // Replace with your actual OG image URL
+        width: 1200,
+        height: 630,
+        alt: 'Latsubnet WiFi Vouchers',
+      },
+    ],
+    locale: 'en_US',
+    alternateLocale: ['id_ID'],
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'LATSUBNET - WiFi Vouchers',
+    description: 'Discover affordable and reliable WiFi vouchers at Latsubnet.',
+    // images: [`${siteDomain}/twitter-image.png`], // Replace with your actual Twitter image URL
+    // siteId: 'YOUR_TWITTER_SITE_ID', // Optional: Your Twitter site ID
+    // creator: '@YOUR_TWITTER_HANDLE', // Optional: Your Twitter handle
+  },
+  icons: { // Optional: Add favicon and other icons
+    icon: '/favicon.ico',
+    // apple: '/apple-touch-icon.png',
+  },
+  // manifest: '/site.webmanifest', // Optional: For PWA capabilities
 };
 
 const MIDTRANS_CLIENT_KEY = process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY || "SB-Mid-client-OVHobrlLdKtUpsyk";
@@ -46,7 +83,7 @@ export default function RootLayout({
           data-client-key={MIDTRANS_CLIENT_KEY}
           strategy="afterInteractive"
         />
-        <LocaleSetter /> {/* Moved LocaleSetter to the end of body */}
+        <LocaleSetter />
       </body>
     </html>
   );

@@ -3,13 +3,64 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import { useParams } from 'next/navigation';
+import type { Metadata, ResolvingMetadata } from 'next';
 import type { Voucher } from '@/types';
 import { VoucherDetailClientContent } from '@/components/vouchers/VoucherDetailClientContent';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Loader2, WifiOff } from "lucide-react";
 import { useToast } from '@/hooks/use-toast';
-import { Navbar } from '@/components/layout/Navbar'; // Assuming you want navbar on detail page
-import { Footer } from '@/components/layout/Footer';   // Assuming you want footer on detail page
+
+// This function would ideally fetch voucher details on the server for metadata.
+// For now, we'll use placeholder data or data derived from params for metadata.
+// async function getVoucherForMetadata(id: string): Promise<Partial<Voucher> | null> {
+//   try {
+//     const response = await fetch(`http://127.0.0.1:8000/api/detail-voucher/${id}`);
+//     if (!response.ok) return null;
+//     const data = await response.json();
+//     return data.success ? data.data : null;
+//   } catch (error) {
+//     console.error("Error fetching voucher for metadata:", error);
+//     return null;
+//   }
+// }
+
+export async function generateMetadata(
+  { params }: { params: { id: string } },
+  parent: ResolvingMetadata
+): Promise<Metadata> {
+  const voucherId = params.id;
+  // const voucher = await getVoucherForMetadata(voucherId);
+
+  // Using placeholders or data from params until server-side fetch is fully integrated here
+  const voucherName = `Voucher ${voucherId}`; // Placeholder: use voucher.name if fetched
+  const voucherDescription = `Purchase WiFi voucher ${voucherId} for fast internet. Check details and buy now.`; // Placeholder
+
+  const parentOpenGraph = (await parent).openGraph || {};
+  const siteName = parentOpenGraph.siteName || 'Latsubnet';
+
+  const currentCanonicalUrl = (await parent).url;
+  const metadataBase = (await parent).metadataBase!;
+
+  // Base paths without locale prefix
+  const basePath = `/voucher/${voucherId}`;
+  const enPath = basePath;
+  const idPath = `/id${basePath}`;
+
+  return {
+    title: `${voucherName} - ${siteName}`,
+    description: voucherDescription,
+    keywords: ['buy wifi voucher', `voucher ${voucherId}`, 'internet package details', 'latsubnet voucher', `beli voucher ${voucherId}`],
+    alternates: {
+      canonical: currentCanonicalUrl,
+      languages: {
+        'en': new URL(enPath, metadataBase).toString(),
+        'id': new URL(idPath, metadataBase).toString(),
+        'x-default': new URL(enPath, metadataBase).toString(),
+      },
+    },
+  };
+}
+
 
 export default function VoucherDetailPage() {
   const params = useParams();
@@ -35,7 +86,6 @@ export default function VoucherDetailPage() {
       }
       const data = await response.json();
       if (data.success && data.data) {
-        // Parse price from string to number if necessary
         const fetchedVoucher = {
           ...data.data,
           price: parseFloat(data.data.price) || 0, 
@@ -62,8 +112,6 @@ export default function VoucherDetailPage() {
   }, [fetchVoucherDetail]);
   
   const handlePurchaseSuccessOnDetailPage = () => {
-    // After a successful purchase on the detail page, re-fetch its data
-    // to update its status (e.g., if it becomes sold out).
     fetchVoucherDetail();
     toast({
       title: "Purchase Successful!",

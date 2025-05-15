@@ -1,22 +1,38 @@
 
 "use client";
 
-// import type { Metadata } from 'next'; // Metadata remains static for now
-// import { usePathname } from 'next/navigation'; // No longer needed for t function
-// import { getTranslator, getCurrentLocaleFromPathname } from '@/lib/i18n'; // Replaced
-// import type { Locale } from '@/lib/i18n'; // No longer needed
+import type { Metadata, ResolvingMetadata } from 'next';
 import { useAutoTranslation } from '@/hooks/useAutoTranslation';
 
-// export const metadata: Metadata = { // Cannot be dynamic this way in client component
-//   title: 'About Us - Latsubnet',
-//   description: 'Learn more about Latsubnet and our WiFi voucher services.',
-// };
+export async function generateMetadata(
+  { params }: { params: {} },
+  parent: ResolvingMetadata
+): Promise<Metadata> {
+  const parentOpenGraph = (await parent).openGraph || {};
+  const siteName = parentOpenGraph.siteName || 'Latsubnet';
+
+  const currentCanonicalUrl = (await parent).url; // URL object for the current page, resolved by Next.js
+  const metadataBase = (await parent).metadataBase!; // URL object from root layout
+
+  const enPath = '/about';
+  const idPath = '/id/about';
+
+  return {
+    title: `About Us - ${siteName}`,
+    description: `Learn more about ${siteName}, your trusted provider for WiFi vouchers in Indonesia. We offer diverse internet packages to keep you connected seamlessly.`,
+    keywords: ['about latsubnet', 'tentang latsubnet', 'wifi voucher indonesia', 'internet packages', 'latsubnet company profile', 'penyedia internet'],
+    alternates: {
+      canonical: currentCanonicalUrl,
+      languages: {
+        'en': new URL(enPath, metadataBase).toString(),
+        'id': new URL(idPath, metadataBase).toString(),
+        'x-default': new URL(enPath, metadataBase).toString(),
+      },
+    },
+  };
+}
 
 export default function AboutPage() {
-  // const pathname = usePathname();
-  // const currentLocale = getCurrentLocaleFromPathname(pathname);
-  // const t = getTranslator(currentLocale);
-
   const { translatedText: pageTitle, isLoading: isLoadingPageTitle } = useAutoTranslation('about.title');
   const { translatedText: intro1, isLoading: isLoadingIntro1 } = useAutoTranslation('about.intro1');
   const { translatedText: intro2, isLoading: isLoadingIntro2 } = useAutoTranslation('about.intro2');
@@ -31,7 +47,6 @@ export default function AboutPage() {
     if (isHtml) return <p dangerouslySetInnerHTML={{ __html: text }} />;
     return <p>{text}</p>;
   };
-
 
   return (
     <div className="container mx-auto px-4 py-12 min-h-[calc(100vh-200px)]">

@@ -1,24 +1,40 @@
 
 "use client";
 
-// import type { Metadata } from 'next'; // Metadata remains static for now
+import type { Metadata, ResolvingMetadata } from 'next';
 import Link from 'next/link';
 import { Phone, MessageSquare } from 'lucide-react';
-// import { usePathname } from 'next/navigation'; // No longer needed
-// import { getTranslator, getCurrentLocaleFromPathname } from '@/lib/i18n'; // Replaced
-// import type { Locale } from '@/lib/i18n'; // No longer needed
 import { useAutoTranslation } from '@/hooks/useAutoTranslation';
 
-// export const metadata: Metadata = { // Cannot be dynamic this way in client component
-//   title: 'Contact Us - Latsubnet',
-//   description: 'Get in touch with Latsubnet for support and inquiries via WhatsApp.',
-// };
+export async function generateMetadata(
+  { params }: { params: {} },
+  parent: ResolvingMetadata
+): Promise<Metadata> {
+  const parentOpenGraph = (await parent).openGraph || {};
+  const siteName = parentOpenGraph.siteName || 'Latsubnet';
+
+  const currentCanonicalUrl = (await parent).url;
+  const metadataBase = (await parent).metadataBase!;
+
+  const enPath = '/contact';
+  const idPath = '/id/contact';
+
+  return {
+    title: `Contact Us - ${siteName}`,
+    description: `Get in touch with ${siteName} for support and inquiries about our WiFi vouchers. Contact us via WhatsApp for a quick response.`,
+    keywords: ['contact latsubnet', 'kontak latsubnet', 'latsubnet support', 'whatsapp latsubnet', 'customer service wifi voucher'],
+    alternates: {
+      canonical: currentCanonicalUrl,
+      languages: {
+        'en': new URL(enPath, metadataBase).toString(),
+        'id': new URL(idPath, metadataBase).toString(),
+        'x-default': new URL(enPath, metadataBase).toString(),
+      },
+    },
+  };
+}
 
 export default function ContactPage() {
-  // const pathname = usePathname();
-  // const currentLocale = getCurrentLocaleFromPathname(pathname);
-  // const t = getTranslator(currentLocale);
-
   const { translatedText: pageTitle, isLoading: isLoadingPageTitle } = useAutoTranslation('contact.title');
   const { translatedText: intro, isLoading: isLoadingIntro } = useAutoTranslation('contact.intro');
   const { translatedText: whatsappTitle, isLoading: isLoadingWhatsappTitle } = useAutoTranslation('contact.whatsapp.title');
@@ -26,7 +42,6 @@ export default function ContactPage() {
   const { translatedText: whatsappButton, isLoading: isLoadingWhatsappButton } = useAutoTranslation('contact.whatsapp.button');
   const { translatedText: outro1, isLoading: isLoadingOutro1 } = useAutoTranslation('contact.outro1');
   const { translatedText: outro2, isLoading: isLoadingOutro2 } = useAutoTranslation('contact.outro2');
-
 
   const whatsappNumber = "6281996926744"; 
   const displayWhatsappNumber = "+62 819 9692 6744"; 
@@ -41,7 +56,6 @@ export default function ContactPage() {
     if (isLoading) return <p className="h-5 bg-muted-foreground/20 rounded w-full animate-pulse mb-2"></p>;
     return <p>{text}</p>;
   };
-
 
   return (
     <div className="container mx-auto px-4 py-12 min-h-[calc(100vh-200px)]">
