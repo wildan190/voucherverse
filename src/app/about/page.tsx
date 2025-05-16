@@ -1,26 +1,39 @@
 
-import type { Metadata, ResolvingMetadata } from 'next';
-import AboutClientPage from './AboutClientPage';
+"use client";
 
-export async function generateMetadata(
-  { params }: { params: {} },
-  parent: ResolvingMetadata
-): Promise<Metadata> {
-  const parentOpenGraph = (await parent).openGraph || {};
-  const siteName = parentOpenGraph.siteName || 'Latsubnet';
+import { useEffect } from 'react';
 
-  const metadataBase = (await parent).metadataBase!;
-  const basePath = '/about';
+// Removed generateMetadata
+// Removed import AboutClientPage
 
-  return {
-    title: `About Us - ${siteName}`,
-    description: `Learn more about ${siteName}, your trusted provider for WiFi vouchers in Indonesia. We offer diverse internet packages to keep you connected seamlessly.`,
-    keywords: ['about latsubnet', 'tentang latsubnet', 'wifi voucher indonesia', 'internet packages', 'latsubnet company profile', 'penyedia internet'],
-    alternates: {
-      canonical: new URL(basePath, metadataBase).toString(),
-      // languages removed
-    },
-  };
+const pageTitle = "About Latsubnet";
+const intro1 = "Welcome to <strong>Latsubnet</strong>, your go-to destination for seamless and reliable WiFi access! We understand the importance of staying connected in today's fast-paced digital world. That's why we specialize in providing a diverse range of WiFi vouchers meticulously designed to meet your varied internet needs.";
+const intro2 = "Whether you're seeking short-term access for a quick task, a high-speed data package for streaming and gaming, or a budget-friendly option for everyday browsing, Latsubnet has you covered. Our core mission is to make internet access simple, affordable, and exceptionally convenient for everyone.";
+const intro3 = "We invite you to explore our comprehensive selection of voucher options and experience truly uninterrupted connectivity with Latsubnet. We are passionately committed to offering top-quality service and ensuring you have the best possible online experience every time you connect.";
+const outro = "Thank you for choosing Latsubnet. We look forward to keeping you connected!";
+
+export default function AboutPage() {
+  useEffect(() => {
+    // Title will be composed by layout's template: "About Us - Latsubnet"
+    document.title = "About Us"; 
+  }, []);
+
+  return (
+    <div className="container mx-auto px-4 py-12 min-h-[calc(100vh-200px)]">
+      <header className="mb-10 text-center">
+        <h1 className="text-4xl md:text-5xl font-bold text-primary">
+          {pageTitle}
+        </h1>
+      </header>
+      
+      <div className="max-w-3xl mx-auto bg-card p-8 rounded-xl shadow-lg border border-border">
+        <div className="space-y-6 text-lg text-card-foreground leading-relaxed">
+          <p dangerouslySetInnerHTML={{ __html: intro1 }} />
+          <p>{intro2}</p>
+          <p>{intro3}</p>
+          <p>{outro}</p>
+        </div>
+      </div>
+    </div>
+  );
 }
-
-export default AboutClientPage;
